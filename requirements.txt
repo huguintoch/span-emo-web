@@ -1,0 +1,15 @@
+Flask
+Werkzeug
+numpy
+gunicorn
+jinja2
+Werkzeug
+itsdangerous
+sklearn
+fastprogress
+docopt
+transformers
+pandas
+ekphrasis
+tqdm
+torch

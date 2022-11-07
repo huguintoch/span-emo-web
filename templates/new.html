@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SpanEmo Web</title>
+</head>
+
+<body>
+    
+    <h1 style="text-align:center;color: rgb(156, 11, 6);font-family: inherit;">SpanEmo Web</h1>
+    <hr style="color: rgb(0, 0, 0);">
+    <h2 style="color: rgb(0, 0, 0);">Provide an input value below</h2>
+
+    <form style="margin-top: 50px;padding-left:200px;" action="{{url_for('predict')}}" method="post">
+
+        <input type="text" placeholder="Enter the input value" required='required' name="model_input">
+
+        <br><br>
+
+        <button style="margin-left:00px" type="submit" class="btn btn-outline-danger btn-lg">Predict</button><br><br>
+
+        <b style="color: rgb(0, 0, 0);font-size: 22px;">{{statement}}</b>
+
+    </form>
+    <br>
+
+</body>
+
+</html>
