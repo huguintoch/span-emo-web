@@ -1,10 +1,12 @@
+import torch
+import numpy as np
+import time
+
 from fastprogress.fastprogress import format_time, master_bar, progress_bar
 from model import SpanEmo
 from data_loader import DataClass
 from torch.utils.data import DataLoader
-import torch
-import numpy as np
-import time
+
 
 class EvaluateOnTest(object):
     """
@@ -13,6 +15,7 @@ class EvaluateOnTest(object):
     :param test_data_loader: dataloader for all of the validation data
     :param model_path: path of the trained model
     """
+
     def __init__(self, model, test_data_loader, model_path):
         self.model = model
         self.test_data_loader = test_data_loader
@@ -38,14 +41,17 @@ class EvaluateOnTest(object):
             for step, batch in enumerate(progress_bar(self.test_data_loader, parent=pbar, leave=(pbar is not None))):
                 _, num_rows, y_pred, targets = self.model(batch, device)
                 current_index = index_dict
-                preds_dict['y_true'][current_index: current_index + num_rows, :] = targets
-                preds_dict['y_pred'][current_index: current_index + num_rows, :] = y_pred
+                preds_dict['y_true'][current_index: current_index +
+                                     num_rows, :] = targets
+                preds_dict['y_pred'][current_index: current_index +
+                                     num_rows, :] = y_pred
                 index_dict += num_rows
 
         y_true, y_pred = preds_dict['y_true'], preds_dict['y_pred']
         return y_pred
 
-def evaluate_input(filename = 'test.txt'):
+
+def evaluate_input(filename='test.txt'):
     device = init_device()
     args = {
         '--max-length': 128,
@@ -59,6 +65,7 @@ def evaluate_input(filename = 'test.txt'):
     learn = EvaluateOnTest(model, test_data_loader, model_path='checkpoint.pt')
     return learn.predict(device=device)
 
+
 def init_device():
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     if str(device) == 'cuda:0':
@@ -71,10 +78,13 @@ def init_device():
         print("Currently using CPU")
     return device
 
+
 def emotion_indexes_to_lables(index_arr):
-    labels = ['anger', 'anticipation', 'disgust', 'fear', 'joy', 'love', 'optimism', 'pessimism', 'sadness', 'surprise', 'trust']
+    labels = ['anger', 'anticipation', 'disgust', 'fear', 'joy',
+              'love', 'optimism', 'pessimism', 'sadness', 'surprise', 'trust']
     label_array = [labels[i] for i in range(11) if index_arr[i] != 0]
     return label_array if len(label_array) > 0 else ['neutral']
+
 
 def save_input_to_file(input_text):
     with open('test.txt', 'w') as f:

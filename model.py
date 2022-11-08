@@ -1,8 +1,9 @@
-from transformers import BertModel, AutoModel
 import torch.nn.functional as F
 import torch.nn as nn
 import torch
-import transformers 
+import transformers
+
+from transformers import BertModel, AutoModel
 
 
 class BertEncoder(nn.Module):
@@ -16,7 +17,8 @@ class BertEncoder(nn.Module):
         elif lang == 'Arabic':
             self.bert = AutoModel.from_pretrained("asafaya/bert-base-arabic")
         elif lang == 'Spanish':
-            self.bert = AutoModel.from_pretrained("dccuchile/bert-base-spanish-wwm-uncased")
+            self.bert = AutoModel.from_pretrained(
+                "dccuchile/bert-base-spanish-wwm-uncased")
         self.feature_size = self.bert.config.hidden_size
 
     def forward(self, input_ids):
@@ -25,8 +27,9 @@ class BertEncoder(nn.Module):
         :return: last hidden representation, torch.tensor of shape (batch_size, seq_length, hidden_dim)
         """
         if int((transformers.__version__)[0]) == 4:
-            last_hidden_state = self.bert(input_ids=input_ids).last_hidden_state
-        else: #transformers version should be as indicated in the requirements.txt file
+            last_hidden_state = self.bert(
+                input_ids=input_ids).last_hidden_state
+        else:  # transformers version should be as indicated in the requirements.txt file
             last_hidden_state, pooler_output = self.bert(input_ids=input_ids)
         return last_hidden_state
 
@@ -43,7 +46,7 @@ class SpanEmo(nn.Module):
         self.bert = BertEncoder(lang=lang)
         self.joint_loss = joint_loss
         self.alpha = alpha
-        
+
         self.ffn = nn.Sequential(
             nn.Linear(self.bert.feature_size, self.bert.feature_size),
             nn.Tanh(),
@@ -57,19 +60,21 @@ class SpanEmo(nn.Module):
         :param device: device to run calculations on
         :return: loss, num_rows, y_pred, targets
         """
-        #prepare inputs and targets
+        # prepare inputs and targets
         inputs, targets, lengths, label_idxs = batch
         inputs, num_rows = inputs.to(device), inputs.size(0)
-        label_idxs, targets = label_idxs[0].long().to(device), targets.float().to(device)
+        label_idxs, targets = label_idxs[0].long().to(
+            device), targets.float().to(device)
 
-        #Bert encoder
+        # Bert encoder
         last_hidden_state = self.bert(inputs)
 
         # FFN---> 2 linear layers---> linear layer + tanh---> linear layer
         # select span of labels to compare them with ground truth ones
-        logits = self.ffn(last_hidden_state).squeeze(-1).index_select(dim=1, index=label_idxs)
+        logits = self.ffn(
+            last_hidden_state).squeeze(-1).index_select(dim=1, index=label_idxs)
 
-        #Loss Function
+        # Loss Function
         if self.joint_loss == 'joint':
             cel = F.binary_cross_entropy_with_logits(logits, targets).cuda()
             cl = self.corr_loss(logits, targets)
@@ -94,11 +99,12 @@ class SpanEmo(nn.Module):
         for idx, (y, y_h) in enumerate(zip(y_true, y_hat.sigmoid())):
             y_z, y_o = (y == 0).nonzero(), y.nonzero()
             if y_o.nelement() != 0:
-                output = torch.exp(torch.sub(y_h[y_z], y_h[y_o][:, None]).squeeze(-1)).sum()
+                output = torch.exp(
+                    torch.sub(y_h[y_z], y_h[y_o][:, None]).squeeze(-1)).sum()
                 num_comparisons = y_z.size(0) * y_o.size(0)
                 loss[idx] = output.div(num_comparisons)
         return loss.mean() if reduction == 'mean' else loss.sum()
-        
+
     @staticmethod
     def compute_pred(logits, threshold=0.5):
         """

@@ -1,7 +1,8 @@
+import pickle
+import numpy as np
+
 from flask import Flask, render_template, request
 from runner import save_input_to_file, evaluate_input, emotion_indexes_to_lables
-import numpy as np
-import pickle
 
 app = Flask(__name__)
 

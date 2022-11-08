@@ -1,31 +1,38 @@
 <!doctype html>
 <html lang="en">
-<head>
 
+<head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
     <title>SpanEmo Web</title>
 </head>
 
 <body>
-    
-    <h1 style="text-align:center;color: rgb(156, 11, 6);font-family: inherit;">SpanEmo Web</h1>
-    <hr style="color: rgb(0, 0, 0);">
-    <h2 style="color: rgb(0, 0, 0);">Provide an input value below</h2>
 
-    <form style="margin-top: 50px;padding-left:200px;" action="{{url_for('predict')}}" method="post">
+    <div class="container d-flex justify-content-center align-items-center" style="flex-direction: column; height: 100vh;">
+        <h1>SpanEmo Web 😄😥😡</h1>
+        <br>
+        <h3>Write a sentence in English below</h3>
+        <form action="{{url_for('predict')}}" method="post">
+            <div class="mb-3 d-flex justify-content-center">
+                <textarea placeholder="Text on which to apply emotion detection" required='required'
+                    cols="60" name="model_input"></textarea>
+            </div>
+            <div class="mb-3 d-flex justify-content-center">
+                <button type="submit" class="btn btn-primary">Predict</button>
+            </div>
+            <div class="mb-3 d-flex justify-content-center">
+                <b>{{statement}}</b>
+            </div>
+        </form>
+    </div>
 
-        <input type="text" placeholder="Enter the input value" required='required' name="model_input">
-
-        <br><br>
-
-        <button style="margin-left:00px" type="submit" class="btn btn-outline-danger btn-lg">Predict</button><br><br>
-
-        <b style="color: rgb(0, 0, 0);font-size: 22px;">{{statement}}</b>
-
-    </form>
-    <br>
-
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
+        crossorigin="anonymous"></script>
 </body>
 
 </html>

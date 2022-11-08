@@ -4,6 +4,10 @@ Simply install external libraries with the following command:
 ```
 pip install -r requirements.txt
 ```
+
+## Example
+![image](ui-example.jpg)
+
 ## References
 - Original paper [SpanEmo](https://github.com/hasanhuz/SpanEmo)
 - [ML + Heroku](https://towardsdatascience.com/deploying-machine-learning-models-with-heroku-4dec1df87f71)

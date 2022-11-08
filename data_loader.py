@@ -1,8 +1,9 @@
+import torch
+import pandas as pd
+
 from torch.utils.data import Dataset
 from transformers import BertTokenizer, AutoTokenizer
 from tqdm import tqdm
-import torch
-import pandas as pd
 from ekphrasis.classes.tokenizer import SocialTokenizer
 from ekphrasis.classes.preprocessor import TextPreProcessor
 
@@ -10,7 +11,8 @@ from ekphrasis.classes.preprocessor import TextPreProcessor
 def twitter_preprocessor():
     preprocessor = TextPreProcessor(
         normalize=['url', 'email', 'phone', 'user'],
-        annotate={"hashtag", "elongated", "allcaps", "repeated", 'emphasis', 'censored'},
+        annotate={"hashtag", "elongated", "allcaps",
+                  "repeated", 'emphasis', 'censored'},
         all_caps_tag="wrap",
         fix_text=False,
         segmenter="twitter_2018",
@@ -30,11 +32,14 @@ class DataClass(Dataset):
         self.data, self.labels = self.load_dataset()
 
         if args['--lang'] == 'English':
-            self.bert_tokeniser = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
+            self.bert_tokeniser = BertTokenizer.from_pretrained(
+                'bert-base-uncased', do_lower_case=True)
         elif args['--lang'] == 'Arabic':
-            self.bert_tokeniser = AutoTokenizer.from_pretrained("asafaya/bert-base-arabic")
+            self.bert_tokeniser = AutoTokenizer.from_pretrained(
+                "asafaya/bert-base-arabic")
         elif args['--lang'] == 'Spanish':
-            self.bert_tokeniser = AutoTokenizer.from_pretrained("dccuchile/bert-base-spanish-wwm-uncased")
+            self.bert_tokeniser = AutoTokenizer.from_pretrained(
+                "dccuchile/bert-base-spanish-wwm-uncased")
 
         self.inputs, self.lengths, self.label_indices = self.process_data()
 
@@ -56,7 +61,8 @@ class DataClass(Dataset):
                            "love", "optimism", "hopeless", "sadness", "surprise", "trust"]
         elif self.args['--lang'] == 'Arabic':
             segment_a = "غضب توقع قرف خوف سعادة حب تفأول اليأس حزن اندهاش أو ثقة؟"
-            label_names = ['غضب', 'توقع', 'قر', 'خوف', 'سعادة', 'حب', 'تف', 'الياس', 'حزن', 'اند', 'ثقة']
+            label_names = ['غضب', 'توقع', 'قر', 'خوف', 'سعادة',
+                           'حب', 'تف', 'الياس', 'حزن', 'اند', 'ثقة']
 
         elif self.args['--lang'] == 'Spanish':
             segment_a = "ira anticipaciÃ³n asco miedo alegrÃ­a amor optimismo pesimismo tristeza sorpresa or confianza?"
@@ -77,9 +83,9 @@ class DataClass(Dataset):
             inputs.append(input_id)
             lengths.append(input_length)
 
-            #label indices
+            # label indices
             label_idxs = [self.bert_tokeniser.convert_ids_to_tokens(input_id).index(label_names[idx])
-                             for idx, _ in enumerate(label_names)]
+                          for idx, _ in enumerate(label_names)]
             label_indices.append(label_idxs)
 
         inputs = torch.tensor(inputs, dtype=torch.long)
